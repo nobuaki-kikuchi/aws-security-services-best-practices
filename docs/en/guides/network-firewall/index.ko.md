@@ -9,20 +9,20 @@ AWS Network Firewall 모범 사례 가이드에 오신 것을 환영합니다. �
 이 가이드는 AWS 계정(및 리소스) 내에서 보안 이벤트, 악의적 활동, 취약점의 모니터링과 대응을 담당하는 보안 실무자를 대상으로 합니다. 모범 사례는 이해하기 쉽도록 여러 카테고리로 구성되어 있습니다. 각 카테고리에는 관련 모범 사례가 포함되어 있으며, 간략한 개요에 이어 구현을 위한 세부 단계가 제시됩니다. 주제는 특정 순서로 읽을 필요가 없습니다.
 
 * [시작하기](#시작하기)
-    * [배포 고려사항](#배포-고려사항)
+  * [배포 고려사항](#배포-고려사항)
 * [구현](#구현)
 * [운영화](#운영화)
-    * [대칭 라우팅 보장](#대칭-라우팅-보장)
-    * [엄격한 규칙 순서 및 'Drop established' 또는 'Application drop established'와 해당 'Alert' 기본 작업 사용](#엄격한-규칙-순서-및-drop-established-또는-application-drop-established와-해당-alert-기본-작업-사용)
-    * [Stateless 규칙보다 Stateful 규칙 사용](#stateless-규칙보다-stateful-규칙-사용)
-    * [UI 생성 규칙 대신 사용자 지정 Suricata 규칙 사용](#ui-생성-규칙-대신-사용자-지정-suricata-규칙-사용)
-    * [가능한 한 적은 수의 사용자 지정 규칙 그룹 사용](#가능한-한-적은-수의-사용자-지정-규칙-그룹-사용)
-    * [$HOME_NET 변수가 올바르게 설정되었는지 확인](#home_net-변수가-올바르게-설정되었는지-확인)
-    * [허용된 트래픽을 로깅하기 위해 Pass 규칙 전에 Alert 규칙 사용](#허용된-트래픽을-로깅하기-위해-pass-규칙-전에-alert-규칙-사용)
-    * [Stateful 규칙에서 "flow:to_server" 키워드 사용](#stateful-규칙에서-flowto_server-키워드-사용)
-    * [새로운 Stateful 방화벽 규칙이 기존 플로우에 적용되도록 하는 방법](#새로운-stateful-방화벽-규칙이-기존-플로우에-적용되도록-하는-방법)
-    * [로깅 및 모니터링 설정](#로깅-및-모니터링-설정)
-    * [AWS Network Firewall을 사용한 클라이언트 측 TLS SNI 조작 완화 옵션](#aws-network-firewall을-사용한-클라이언트-측-tls-sni-조작-완화-옵션)
+  * [대칭 라우팅 보장](#대칭-라우팅-보장)
+  * [엄격한 규칙 순서 및 'Drop established' 또는 'Application drop established'와 해당 'Alert' 기본 작업 사용](#엄격한-규칙-순서-및-drop-established-또는-application-drop-established와-해당-alert-기본-작업-사용)
+  * [Stateless 규칙보다 Stateful 규칙 사용](#stateless-규칙보다-stateful-규칙-사용)
+  * [UI 생성 규칙 대신 사용자 지정 Suricata 규칙 사용](#ui-생성-규칙-대신-사용자-지정-suricata-규칙-사용)
+  * [가능한 한 적은 수의 사용자 지정 규칙 그룹 사용](#가능한-한-적은-수의-사용자-지정-규칙-그룹-사용)
+  * [$HOME_NET 변수가 올바르게 설정되었는지 확인](#home_net-변수가-올바르게-설정되었는지-확인)
+  * [허용된 트래픽을 로깅하기 위해 Pass 규칙 전에 Alert 규칙 사용](#허용된-트래픽을-로깅하기-위해-pass-규칙-전에-alert-규칙-사용)
+  * [Stateful 규칙에서 "flow:to_server" 키워드 사용](#stateful-규칙에서-flowto_server-키워드-사용)
+  * [새로운 Stateful 방화벽 규칙이 기존 플로우에 적용되도록 하는 방법](#새로운-stateful-방화벽-규칙이-기존-플로우에-적용되도록-하는-방법)
+  * [로깅 및 모니터링 설정](#로깅-및-모니터링-설정)
+  * [AWS Network Firewall을 사용한 클라이언트 측 TLS SNI 조작 완화 옵션](#aws-network-firewall을-사용한-클라이언트-측-tls-sni-조작-완화-옵션)
 * [비용 고려사항](#비용-고려사항)
 * [비대칭 전달을 위한 Stateless 규칙 문제 해결](#비대칭-전달을-위한-stateless-규칙-문제-해결)
 * [리소스](#리소스)
@@ -84,8 +84,8 @@ Network Firewall은 비대칭 라우팅을 지원하지 않으므로 VPC에서 �
 ### 엄격한 규칙 순서 및 'Drop established' 또는 'Application drop established'와 해당 'Alert' 기본 작업 사용
 
 * Network Firewall에는 Suricata 엔진이 규칙을 처리하는 방법에 대한 두 가지 옵션이 있습니다.
-    * "Strict" 옵션은 정의한 순서대로 규칙을 처리하도록 Suricata에 지시하므로 권장됩니다.
-    * "Action Order" 옵션은 IDS 사용 사례에 적합하지만 일반적인 방화벽 사용 사례에는 적합하지 않은 Suricata의 기본 규칙 처리를 지원합니다.
+  * "Strict" 옵션은 정의한 순서대로 규칙을 처리하도록 Suricata에 지시하므로 권장됩니다.
+  * "Action Order" 옵션은 IDS 사용 사례에 적합하지만 일반적인 방화벽 사용 사례에는 적합하지 않은 Suricata의 기본 규칙 처리를 지원합니다.
 * Strict 규칙 순서를 선택하면, 모든 규칙의 끝에서 실행되어 이전 규칙과 일치하지 않는 트래픽에 적용되는 "Default" 작업도 선택할 수 있습니다. 두 가지 주요 접근 방식이 있습니다:
 
 #### 'Drop all' 대신 'Drop established'를 사용하는 이유
@@ -117,20 +117,20 @@ Network Firewall은 비대칭 라우팅을 지원하지 않으므로 VPC에서 �
 * Stateless 규칙은 비대칭 플로우 전달 문제(방화벽의 stateful 검사 엔진이 플로우의 한쪽 방향만 보게 되는 현상)를 쉽게 일으킬 수 있고, 전체 방화벽 규칙 세트의 이해와 문제 해결을 더 복잡하게 만들므로 매우 제한적으로 사용해야 합니다. 대부분의 사용 사례에서는 stateless 엔진의 기본 작업을 "Forward to stateful rule groups"로 설정하고, stateful 규칙보다 우선하는 stateless 규칙은 구성하지 않는 것이 좋습니다.
 * Stateless 규칙을 사용하려면, Network Firewall의 Stateless Rule Group Analyzer를 사용하여 비대칭 플로우 문제를 해결하는 방법을 숙지해야 합니다. "비대칭 전달을 위한 Stateless 규칙 문제 해결" 섹션을 참조하십시오.
 * Network Firewall의 심층 패킷 검사 IPS 기능을 활용하려면 Stateful 규칙을 사용해야 합니다. 일부 고객은 stateless 규칙으로 시작했다가 나중에 stateful 규칙이 필요하다는 것을 깨닫게 됩니다.
-    * Stateless 규칙은 일부 트래픽을 로깅하거나 경고하지 않고 단순히 거부하려는 경우에 사용할 수 있지만, 대부분의 경우 규칙 그룹은 AWS 콘솔에서 다음과 같이 표시되어야 합니다.
+  * Stateless 규칙은 일부 트래픽을 로깅하거나 경고하지 않고 단순히 거부하려는 경우에 사용할 수 있지만, 대부분의 경우 규칙 그룹은 AWS 콘솔에서 다음과 같이 표시되어야 합니다.
 
 ![ANF Stateless Rule Groups](../../images/ANF-stateless-rule-evaluation.png)
 
 *그림 4: Network Firewall Stateless 규칙 그룹*
 
 * Stateful 규칙 사용의 장점
-    * 반환 트래픽이 자동으로 허용되므로 동일한 트래픽 플로우에 대해 인그레스 및 이그레스 규칙을 모두 정의할 필요가 없습니다
-    * 심층 패킷 검사가 지원되어 트래픽의 레이어 7 속성에 대한 더 깊은 가시성을 제공합니다
-    * 로깅을 지원하므로 고객이 표준 5-tuple 플로우 정보뿐만 아니라 전체 애플리케이션 수준 트래픽 세부 정보를 검토할 수 있습니다
-    * 이러한 규칙은 문제 해결이 더 쉽고 stateless 규칙보다 훨씬 더 유연하고 강력합니다
-        * 고객은 생성 날짜(변경 요청 번호 포함), 사용 사례 또는 기타 주석과 같은 규칙에 설명을 추가할 수 있습니다
-    * Reject 작업이 지원됩니다
-    * 이러한 규칙의 용량 계산이 더 쉽습니다
+  * 반환 트래픽이 자동으로 허용되므로 동일한 트래픽 플로우에 대해 인그레스 및 이그레스 규칙을 모두 정의할 필요가 없습니다
+  * 심층 패킷 검사가 지원되어 트래픽의 레이어 7 속성에 대한 더 깊은 가시성을 제공합니다
+  * 로깅을 지원하므로 고객이 표준 5-tuple 플로우 정보뿐만 아니라 전체 애플리케이션 수준 트래픽 세부 정보를 검토할 수 있습니다
+  * 이러한 규칙은 문제 해결이 더 쉽고 stateless 규칙보다 훨씬 더 유연하고 강력합니다
+    * 고객은 생성 날짜(변경 요청 번호 포함), 사용 사례 또는 기타 주석과 같은 규칙에 설명을 추가할 수 있습니다
+  * Reject 작업이 지원됩니다
+  * 이러한 규칙의 용량 계산이 더 쉽습니다
 
 ### UI 생성 규칙 대신 사용자 지정 Suricata 규칙 사용
 
@@ -387,15 +387,15 @@ Network Firewall stateful 규칙 상태 테이블을 지우는 방법
 Network Firewall은 두 가지 로그 유형인 Alert 로그와 Flow 로그를 지원합니다
 
 Alert 로그
-    * Suricata의 정보
-    * IPS 엔진
-    * 레이어 7 속성(도메인 등)
-    * 프로토콜 감지
+  * Suricata의 정보
+  * IPS 엔진
+  * 레이어 7 속성(도메인 등)
+  * 프로토콜 감지
 
 Flow 로그
-    * 방화벽을 통과하는 플로우의 5-tuple 정보
-    * 트래픽 볼륨 포함
-    * 데이터의 주요 생산자 및 소비자 식별에 도움
+  * 방화벽을 통과하는 플로우의 5-tuple 정보
+  * 트래픽 볼륨 포함
+  * 데이터의 주요 생산자 및 소비자 식별에 도움
 
 네이티브 [방화벽 모니터링 대시보드](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-using-dashboard.html)는 방화벽에 대한 주요 메트릭을 볼 수 있는 여러 옵션을 제공합니다. 대시보드의 일부로 사용 가능한 모든 메트릭은 [여기](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html)에서 볼 수 있습니다.
 

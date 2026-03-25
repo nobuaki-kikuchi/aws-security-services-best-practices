@@ -69,3 +69,6 @@ plugins:
               - AWS Network Firewall ベストプラクティス: guides/network-firewall/index.md
               - Amazon Route 53 Resolver DNS Firewall ベストプラクティス: guides/dns-firewall/index.md
     - search
+
+markdown_extensions:
+    - mdx_truly_sane_lists
