@@ -390,13 +390,13 @@ Now any and all traffic, even if it is traffic that was previously allowed, will
 
 Network Firewall supports two log types, Alert logs and Flow logs
 
-Alert logs
+* Alert logs
   * Information from Suricata
   * IPS engine
   * Layer 7 attributes (like domains)
   * Protocol detection
 
-Flow logs
+* Flow logs
   * 5=tuple information that flows across the firewall
   * Include the volume of traffic
   * Helps identify the top producers and consumers of data
