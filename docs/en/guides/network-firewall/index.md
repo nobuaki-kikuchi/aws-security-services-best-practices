@@ -9,20 +9,20 @@ Welcome to the AWS Network Firewall Best Practices Guide. The purpose of this gu
 This guide is geared towards security practitioners who are responsible for monitoring and remediation of security events, malicious activity and vulnerabilities within AWS accounts (and resources). The best practices are organized into different categories for easier consumption. Each category includes a set of corresponding best practices that begin with a brief overview, followed by detailed steps for implementing the guidance. The topics do not need to be read in a particular order.
 
 * [Getting Started](#getting-started)
-  * [Deployment Considerations](#deployment-considerations)
+    * [Deployment Considerations](#deployment-considerations)
 * [Implementation](#implementation)
 * [Operationalizing](#operationalizing)
-  * [Ensure Symmetric Routing](#ensure-symmetric-routing)
-  * [Use Strict rule ordering and 'Drop established' or 'Application drop established' with corresponding 'Alert' default actions](#use-strict-rule-ordering-and-drop-established-or-application-drop-established-with-corresponding-alert-default-actions)
-  * [Use Stateful rules over Stateless rules](#use-stateful-rules-over-stateless-rules)
-  * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
-  * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
-  * [Ensure the $HOME_NET variable is set correctly](#ensure-the-home_net-variable-is-set-correctly)
-  * [Use Alert rule before Pass rule to log allowed traffic](#use-alert-rule-before-pass-rule-to-log-allowed-traffic)
-  * [Use “flow:to_server” keyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
-  * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
-  * [Set up logging and monitoring](#set-up-logging-and-monitoring)
-  * [Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall](#options-for-mitigating-client-side-tls-sni-manipulation-with-aws-network-firewall)
+    * [Ensure Symmetric Routing](#ensure-symmetric-routing)
+    * [Use Strict rule ordering and 'Drop established' or 'Application drop established' with corresponding 'Alert' default actions](#use-strict-rule-ordering-and-drop-established-or-application-drop-established-with-corresponding-alert-default-actions)
+    * [Use Stateful rules over Stateless rules](#use-stateful-rules-over-stateless-rules)
+    * [Use Custom Suricata rules instead of UI generated rules](#use-custom-suricata-rules-instead-of-ui-generated-rules)
+    * [Use as few Custom Rule Groups as possible](#use-as-few-custom-rule-groups-as-possible)
+    * [Ensure the $HOME_NET variable is set correctly](#ensure-the-home_net-variable-is-set-correctly)
+    * [Use Alert rule before Pass rule to log allowed traffic](#use-alert-rule-before-pass-rule-to-log-allowed-traffic)
+    * [Use “flow:to_server Ekeyword in stateful rules](#use-flowto_server-keyword-in-stateful-rules)
+    * [How to make sure your new Stateful firewall rules apply to existing flows](#how-to-make-sure-your-new-stateful-firewall-rules-apply-to-existing-flows)
+    * [Set up logging and monitoring](#set-up-logging-and-monitoring)
+    * [Options for Mitigating client side TLS SNI manipulation with AWS Network Firewall](#options-for-mitigating-client-side-tls-sni-manipulation-with-aws-network-firewall)
 * [Cost Considerations](#cost-considerations)
 * [Troubleshooting stateless rules for asymmetric forwarding](#troubleshooting-stateless-rules-for-asymmetric-forwarding)
 * [Resources](#resources)
@@ -45,9 +45,9 @@ When customers first start deploying AWS Network Firewall, they might be tempted
 
 To get started you should understand the three main architecture patterns for Network Firewall deployments and what would be best suit your environment.
 
-* Distributed deployment model — Network Firewall is deployed into each individual VPC.
-* Centralized deployment model — Network Firewall is deployed into a centralized VPC attached to an instance of AWS Transit Gateway for East-West (VPC-to-VPC) or North-South (inbound and outbound from internet, on-premises) traffic. We refer to this VPC as the inspection VPC.
-* Combined deployment model — Network Firewall is deployed into a centralized inspection VPC for East-West (VPC-to-VPC) and a subset of North-South (on-premises, egress) traffic. Internet ingress is distributed to VPCs that require dedicated inbound access from the internet, and Network Firewall is deployed accordingly.
+* Distributed deployment model  ENetwork Firewall is deployed into each individual VPC.
+* Centralized deployment model  ENetwork Firewall is deployed into a centralized VPC attached to an instance of AWS Transit Gateway for East-West (VPC-to-VPC) or North-South (inbound and outbound from internet, on-premises) traffic. We refer to this VPC as the inspection VPC.
+* Combined deployment model  ENetwork Firewall is deployed into a centralized inspection VPC for East-West (VPC-to-VPC) and a subset of North-South (on-premises, egress) traffic. Internet ingress is distributed to VPCs that require dedicated inbound access from the internet, and Network Firewall is deployed accordingly.
 
 See the [Deployment models for AWS Network Firewall blog post](https://aws.amazon.com/blogs/networking-and-content-delivery/deployment-models-for-aws-network-firewall/) for further details about deployment models.
 
@@ -85,17 +85,17 @@ If appliance mode is not enabled, the return path traffic could land on an endpo
 ### Use Strict rule ordering and 'Drop established' or 'Application drop established' with corresponding 'Alert' default actions
 
 * In Network Firewall there are two options for how the Suricata engine is going to process rules.
-  * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
-  * The "Action Order" option supports Suricata's default rule processing which is appropriate for IDS use cases but is not a good fit for typical firewall use cases.
+    * The "Strict" option is recommended because it instructs Suricata to process the rules in the order you have defined.
+    * The "Action Order" option supports Suricata's default rule processing which is appropriate for IDS use cases but is not a good fit for typical firewall use cases.
 * When selecting Strict rule ordering you are also able to select "Default" actions that are run at the end of your rules and will be applied to any traffic not matching earlier rules. There are two main approaches:
 
 #### Why 'Drop established' over 'Drop all'
 
-"Drop established" is recommended over "Drop all" because it allows the Suricata engine to perform layer 7 inspection before making a drop decision. This is critical for pass rules that match on domain information in TLS SNI and HTTP host header fields — with "Drop all", traffic would be dropped before Suricata has a chance to inspect these application layer attributes.
+"Drop established" is recommended over "Drop all" because it allows the Suricata engine to perform layer 7 inspection before making a drop decision. This is critical for pass rules that match on domain information in TLS SNI and HTTP host header fields  Ewith "Drop all", traffic would be dropped before Suricata has a chance to inspect these application layer attributes.
 
 #### Drop established
 
-"Drop established" is the simpler option and a good starting point for most deployments. It drops any established connection traffic that doesn't match an earlier rule, while still allowing the layer 7 inspection needed for domain-based filtering. Be sure to also select the corresponding "Alert established" action — without it, traffic dropped by the default action will not be logged. "Alert established" can also be selected on its own without a drop action, which is useful for seeing what traffic would be dropped before enforcing the rule.
+"Drop established" is the simpler option and a good starting point for most deployments. It drops any established connection traffic that doesn't match an earlier rule, while still allowing the layer 7 inspection needed for domain-based filtering. Be sure to also select the corresponding "Alert established" action  Ewithout it, traffic dropped by the default action will not be logged. "Alert established" can also be selected on its own without a drop action, which is useful for seeing what traffic would be dropped before enforcing the rule.
 
 ![Network Firewall Drop Established default actions](../../images/nfw-drop-established.png)
 
@@ -115,23 +115,23 @@ Alternatively, the Egress Default Block Rules in the [custom Suricata rules temp
 
 ### Use Stateful rules over Stateless rules
 
-* Stateless rules should be used very sparingly because they can easily cause asymmetric flow forwarding issues (where only one side of the flow is seen by the stateful inspection engine of the firewall) and they tend to make the overall firewall ruleset more complex to understand and troubleshoot. For the large majority of use cases we recommend the stateless engine’s default action be set to “Forward to stateful rule groups” and we recommend not having any stateless rules configured since they take precedence over stateful rules.
-* If you are going to use stateless rules, it’s important to understand how to use the Network Firewall’s Stateless Rule Group Analyzer to troubleshoot and resolve asymmetric flow issues. See the “Troubleshooting stateless rules for asymmetric forwarding”
+* Stateless rules should be used very sparingly because they can easily cause asymmetric flow forwarding issues (where only one side of the flow is seen by the stateful inspection engine of the firewall) and they tend to make the overall firewall ruleset more complex to understand and troubleshoot. For the large majority of use cases we recommend the stateless engine’s default action be set to “Forward to stateful rule groups Eand we recommend not having any stateless rules configured since they take precedence over stateful rules.
+* If you are going to use stateless rules, it’s important to understand how to use the Network Firewall’s Stateless Rule Group Analyzer to troubleshoot and resolve asymmetric flow issues. See the “Troubleshooting stateless rules for asymmetric forwarding E
 * Customers should leverage Stateful rules if they want to get the deep packet inspection IPS capabilities of the Network Firewall. Some customers accidentally start with stateless rules only to find out later that they really needed to use stateful rules instead.
-  * Stateless rules could be used in the case where you don't want some traffic to be logged or alerted on and simply denied, but for the most part your rule groups should look like this (below) in the AWS Console:
+    * Stateless rules could be used in the case where you don't want some traffic to be logged or alerted on and simply denied, but for the most part your rule groups should look like this (below) in the AWS Console:
 
 ![ANF Stateless Rule Groups](../../images/ANF-stateless-rule-evaluation.png)
 
 *Figure 4: Network Firewall Stateless Rule Groups*
 
 * Pros of using Stateful rules
-  * Return traffic is automatically allowed so there is no need to define both ingress & egress rules for the same flow of traffic
-  * Deep packet inspection is supported, which gives you a deeper visibility into layer 7 attributes of the traffic
-  * Supports logging so customers can review the full application level details of traffic, as well as the standard 5-tuple flow information
-  * These rules are easier to troubleshoot, and they are much more flexible and capable than the stateless rules
-    * Customers can add a description to the rules, such as its creation date (with change request number), use case or other comments
-  * The Reject action is supported
-  * The capacity calculation for these rules is easier to work with
+    * Return traffic is automatically allowed so there is no need to define both ingress & egress rules for the same flow of traffic
+    * Deep packet inspection is supported, which gives you a deeper visibility into layer 7 attributes of the traffic
+    * Supports logging so customers can review the full application level details of traffic, as well as the standard 5-tuple flow information
+    * These rules are easier to troubleshoot, and they are much more flexible and capable than the stateless rules
+        * Customers can add a description to the rules, such as its creation date (with change request number), use case or other comments
+    * The Reject action is supported
+    * The capacity calculation for these rules is easier to work with
 
 ### Use Custom Suricata rules instead of UI generated rules
 
@@ -150,7 +150,7 @@ The pros of using customer Suricata rules:
 * Custom rule signature ID can be used which helps troubleshooting and simplifying log analysis
 * Free-form text rules are easier to copy, edit, share, and backup.
 * Easy to switch rule(s) from one rule group to another (blue-green testing for example)
-* Allow for adding the very important keyword: “flow:to_server” to rules easily
+* Allow for adding the very important keyword: “flow:to_server Eto rules easily
 
 To assist customers in writing their custom Suricata rules, we created the [Suricata Rule Generator for AWS Network Firewall Open Source application](https://github.com/aws-samples/sample-suricata-generator)
 
@@ -317,7 +317,7 @@ This variable can be set at a global firewall policy level or in each rule group
 
 The $HOME_NET variable and it’s inverse ($EXTERNAL_NET) are used for matching traffic in AWS managed rules. By default, $EXTERNAL_NET is the inverse of whatever $HOME_NET is set to at the firewall policy level. If you set $HOME_NET at the rule group level, make sure that you also set $EXTERNAL_NET at the rule group level, too, otherwise the rule group's $EXTERNAL_NET may not be the inverse of the rule group's $HOME_NET.
 
-When using the managed rules for an east/west use case you will want to decide which VPCs/CIDRs you want to protect and assign only those CIDRs to the $HOME_NET variable. If you assign all VPCs/CIDRs then none of those CIDR ranges will be matched by the $EXTERNAL_NET variable in the managed rules. You can also copy out the rules from the threat signatures and adjust the variables to your liking (even replacing the variables by “any“) if you want them to match any/all CIDRs. The downside of doing this is those rules will be static at that point in time and will not be automatically updated like the AWS managed rules.
+When using the managed rules for an east/west use case you will want to decide which VPCs/CIDRs you want to protect and assign only those CIDRs to the $HOME_NET variable. If you assign all VPCs/CIDRs then none of those CIDR ranges will be matched by the $EXTERNAL_NET variable in the managed rules. You can also copy out the rules from the threat signatures and adjust the variables to your liking (even replacing the variables by “any E if you want them to match any/all CIDRs. The downside of doing this is those rules will be static at that point in time and will not be automatically updated like the AWS managed rules.
 
 Here is an example custom Suricata rule that can help you identify if you have traffic going through the firewall that is not included in $HOME_NET and perhaps should be:
 
@@ -343,31 +343,31 @@ Alternatively, you can add `alert;` keyword to pass rules, but they will produce
 pass tls $HOME_NET any -> any any (alert; msg:"www.example2.com allowed"; tls.sni; content:"www.example2.com"; startswith; nocase; endswith; flow:to_server; sid:202506131;)
 ```
 
-### Use “flow:to_server” keyword in stateful rules
+### Use “flow:to_server Ekeyword in stateful rules
 
 With Suricata, it’s possible to configure conflicting rule sets. When traffic to a destination operates at different layers of the [OSI model](https://en.wikipedia.org/wiki/OSI_model), traffic we want to allow that is operating at a higher level(for example TLS) might get blocked by a rule that is operating at a lower level. For example TCP:
 
-#### Example of bad ruleset (Strict rule ordering) – DO NOT USE
+#### Example of bad ruleset (Strict rule ordering)  EDO NOT USE
 
 
 ```
 # Rule 1 is intended to block http traffic to [baddomain.com](http://baddomain.com/)
-reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
+reject http $HOME_NET any ↁEany 80 (http.host; content:"baddomain.com"; sid:1;)
 
 # Rule 2 allows the TCP port 80 traffic flow before application protocol inspection
-pass tcp $HOME_NET any → any 80 (sid:2;)
+pass tcp $HOME_NET any ↁEany 80 (sid:2;)
 ```
 
-Using “flow:to_server” in the rules will make them operate at the same level so the traffic can be evaluated at the same time, and the pass rule (sid:2) doesn’t allow the traffic in a way that takes precedence over the reject rule (sid:1) 
+Using “flow:to_server Ein the rules will make them operate at the same level so the traffic can be evaluated at the same time, and the pass rule (sid:2) doesn’t allow the traffic in a way that takes precedence over the reject rule (sid:1) 
  
-#### Example of good ruleset (Strict rule ordering) – Ok to use
+#### Example of good ruleset (Strict rule ordering)  EOk to use
 
 ```
 # Rule 1 will block http traffic to [baddomain.com](http://baddomain.com/)
-reject http $HOME_NET any → any 80 (http.host; content:"baddomain.com"; sid:1;)
+reject http $HOME_NET any ↁEany 80 (http.host; content:"baddomain.com"; sid:1;)
 
 # Rule 2 will NOT take precedence over rule 1
-pass tcp $HOME_NET any → any 80 (flow:to_server; sid:2;)
+pass tcp $HOME_NET any ↁEany 80 (flow:to_server; sid:2;)
 ```
 
 See [Troubleshooting rules in Network Firewall](https://docs.aws.amazon.com/network-firewall/latest/developerguide/troubleshooting-rules.html) for more information on troubleshooting firewall rules
@@ -391,15 +391,15 @@ Now any and all traffic, even if it is traffic that was previously allowed, will
 Network Firewall supports two log types, Alert logs and Flow logs
 
 * Alert logs
-  * Information from Suricata
-  * IPS engine
-  * Layer 7 attributes (like domains)
-  * Protocol detection
+    * Information from Suricata
+    * IPS engine
+    * Layer 7 attributes (like domains)
+    * Protocol detection
 
 * Flow logs
-  * 5=tuple information that flows across the firewall
-  * Include the volume of traffic
-  * Helps identify the top producers and consumers of data
+    * 5=tuple information that flows across the firewall
+    * Include the volume of traffic
+    * Helps identify the top producers and consumers of data
 
 The native [firewall monitoring dashboard](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-using-dashboard.html) provides multiple options for viewing key metrics about your firewall. You can view all the metrics available as part of the dashboard [here](https://docs.aws.amazon.com/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html). 
 
@@ -434,7 +434,7 @@ Leverage PrivateLink endpoints provided by 3rd party services that do not need t
 
 Ensure route tables are sending traffic to the local Network Firewall endpoint and not to another AZ’s endpoint. This design will avoid incurring cross-AZ data transfer charges.
 
-Use DNS Firewall to keep traffic off of Network Firewall. Basic blocks can be configured at the DNS layer for traffic that would otherwise reach Network Firewall, effectively blocking traffic “closest to the packet source”.
+Use DNS Firewall to keep traffic off of Network Firewall. Basic blocks can be configured at the DNS layer for traffic that would otherwise reach Network Firewall, effectively blocking traffic “closest to the packet source E
 
 You can add `"threshold: type limit, track by_both, seconds 600, count 1;"` to Suricata rules if you want to suppress their logging output to reduce logging costs. For example, the below rule will only alert one time every ten minutes per source and destination IP pair that triggers the rule.
 
@@ -442,11 +442,11 @@ You can add `"threshold: type limit, track by_both, seconds 600, count 1;"` to S
 
 ## Troubleshooting stateless rules for asymmetric forwarding
 
-Certain stateless rule configurations can cause traffic to be inspected by the stateful engine in one direction only, most commonly when a stateless “Pass” or “Forward to stateful rules” is used without a counterpart rule matching the return direction.
+Certain stateless rule configurations can cause traffic to be inspected by the stateful engine in one direction only, most commonly when a stateless “Pass Eor “Forward to stateful rules Eis used without a counterpart rule matching the return direction.
 
-To identify stateless rules causing this asymmetric forwarding, use the service’s built-in rule analyzer, and then update your rule group to either remove the asymmetric rule or add a rule that matches the return traffic. You can use AWS Management Console to analyze your stateless rule group, or use the API or CLI by calling DescribeRuleGroup and setting the “AnalyzeRuleGroup” option.
+To identify stateless rules causing this asymmetric forwarding, use the service’s built-in rule analyzer, and then update your rule group to either remove the asymmetric rule or add a rule that matches the return traffic. You can use AWS Management Console to analyze your stateless rule group, or use the API or CLI by calling DescribeRuleGroup and setting the “AnalyzeRuleGroup Eoption.
 
-Here’s an example of how you can analyze your rule group using AWS Management Console. Go to your stateless rule group and click “Analyze”
+Here’s an example of how you can analyze your rule group using AWS Management Console. Go to your stateless rule group and click “Analyze E
 
 ![ANF Rule group analyzer](../../images/ANF-troubleshooting-1.png)
 
@@ -454,7 +454,7 @@ The rule group analyzer identified that stateless rule with priority 2 will lead
 
 ![ANF Analysis results](../../images/ANF-troubleshooting-2.png)
 
-To fix this issue you can click on “Edit” and add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
+To fix this issue you can click on “Edit Eand add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
 
 ![ANF Analysis results edit](../../images/ANF-troubleshooting-3.png)
 
@@ -581,8 +581,8 @@ Each customer will have to determine if their specific application's threat mode
 * [Use AWS Network Firewall to filter outbound HTTPS traffic from applications hosted on Amazon EKS and collect hostnames provided by SNI](https://aws.amazon.com/blogs/security/use-aws-network-firewall-to-filter-outbound-https-traffic-from-applications-hosted-on-amazon-eks/)
 * [How to deploy AWS Network Firewall by using AWS Firewall Manager](https://aws.amazon.com/blogs/security/how-to-deploy-aws-network-firewall-by-using-aws-firewall-manager/)
 * [Introducing Prefix Lists in AWS Network Firewall Stateful Rule Groups](https://aws.amazon.com/blogs/networking-and-content-delivery/introducing-prefix-lists-in-aws-network-firewall-stateful-rule-groups/)
-* [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 1](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-1/)
-* [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service – Part 2](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-2/)
+* [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service  EPart 1](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-1/)
+* [How to analyze AWS Network Firewall logs using Amazon OpenSearch Service  EPart 2](https://aws.amazon.com/blogs/networking-and-content-delivery/how-to-analyze-aws-network-firewall-logs-using-amazon-opensearch-service-part-2/)
 
 ### Sample Code
 * [AWS Network Firewall CloudWatch Dashboard](https://github.com/aws-samples/aws-networkfirewall-cfn-templates/tree/main/cloudwatch_dashboard)
