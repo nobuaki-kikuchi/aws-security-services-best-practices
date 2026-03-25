@@ -13,6 +13,8 @@ on:
     branches:
       - main
       - master
+      - feature/translate-to-japanese
+
 
     # at least one changed file must match this path
     #paths:
