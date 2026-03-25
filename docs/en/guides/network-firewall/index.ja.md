@@ -105,7 +105,7 @@ Network Firewall は非対称ルーティングをサポートしていないた
 
 #### Application drop established
 
-「Application drop established」は、TLS Client Hello メッセージが複数のパケットに分割される可能性がある環境向けに設計されており、これはポスト量子ハイブリッド暗号鍵交換でますます一般的になっています。TCP ハンドシェイク直後にトラフィックをドロップする代わりに、ドロップの判断を行う前に十分なアプリケーションレイヤーデータ（TLS SNI フィールドなど）を確認するまで待機します。
+「Application drop established」は、TLS Client Hello メッセージが複数のパケットに分割される可能性がある環境向けに設計されており、これはポスト量子ハイブリッド暗号鍵交換でますます一般的になっています。TCP ハンドシェイク直後にトラフィックをドロップするのではなく、ドロップの判断を行う前に十分なアプリケーションレイヤーデータ（TLS SNI フィールドなど）を確認するまで待機します。
 
 ![Network Firewall Application Drop Established default actions](../../images/jp/nfw-app-drop-established.png)
 
@@ -120,7 +120,7 @@ Network Firewall は非対称ルーティングをサポートしていないた
 * ステートレスルールは、非対称フロー転送の問題（ファイアウォールのステートフル検査エンジンがフローの片方向のみを検査する状態）を容易に引き起こします。また、ファイアウォールルールセット全体の理解とトラブルシューティングをより複雑にします。大多数のユースケースでは、ステートレスエンジンのデフォルトアクションを「Forward to stateful rule groups」に設定し、ステートフルルールよりも優先されるステートレスルールは設定しないことをお勧めします。
 * ステートレスルールを使用する場合は、Network Firewall の Stateless Rule Group Analyzer を使用して非対称フローの問題をトラブルシューティングおよび解決する方法を理解することが重要です。「非対称転送に関するステートレスルールのトラブルシューティング」セクションを参照してください。
 * Network Firewall のディープパケットインスペクション IPS 機能を活用するには、ステートフルルールを使用する必要があります。一部のお客様はステートレスルールから始めてしまい、後になってステートフルルールが必要だったことに気づくケースがあります。
-  * ステートレスルールは、一部のトラフィックをログやアラートなしに単純に拒否したい場合に使用できますが、ほとんどの場合、ルールグループは AWS コンソールで以下のように表示されるべきです:
+  * ステートレスルールは、一部のトラフィックをログやアラートなしに単純に拒否したい場合に使用できますが、ほとんどの場合、ルールグループは AWS コンソールで以下のような構成にする必要があります:
 
 ![ANF Stateless Rule Groups](../../images/jp/ANF-stateless-rule-evaluation.png)
 
@@ -403,7 +403,7 @@ Alert ログ
 Flow ログ
   * ファイアウォールを通過するフローの 5 タプル情報
   * トラフィック量を含む
-  * データの主要な生産者と消費者の特定に役立つ
+  * トラフィックの主要な発生源と宛先の特定に役立つ
 
 ネイティブの[ファイアウォールモニタリングダッシュボード](https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/nwfw-using-dashboard.html)は、ファイアウォールに関する主要なメトリクスを表示するための複数のオプションを提供します。ダッシュボードで利用可能なすべてのメトリクスは[こちら](https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/nwfw-detailed-monitoring-metrics.html)で確認できます。
 
