@@ -448,13 +448,13 @@ DNS Firewall을 활용하여 Network Firewall에 도달하는 트래픽을 줄�
 
 규칙 그룹 분석기는 우선순위 2의 stateless 규칙이 Network Firewall을 통한 비대칭 라우팅으로 이어질 것임을 식별했습니다.
 
-![ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+![ANF Analysis results](../../images/ANF-troubleshooting-2.png)
 
 이 문제를 해결하려면 "Edit"을 클릭하고 반환 트래픽을 허용하는 다른 규칙을 추가할 수 있습니다. 즉, 0.0.0.0/0에서 10.2.0.0/24로의 트래픽입니다.
 
-![ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+![ANF Analysis results edit](../../images/ANF-troubleshooting-3.png)
 
-![ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+![ANF Fixed rule group](../../images/ANF-troubleshooting-4.png)
 
 규칙을 업데이트한 후 분석기를 다시 실행하여 문제가 해결되었는지 확인합니다.
 

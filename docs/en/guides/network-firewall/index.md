@@ -452,13 +452,13 @@ Here’s an example of how you can analyze your rule group using AWS Management 
 
 The rule group analyzer identified that stateless rule with priority 2 will lead to asymmetric routing through Network Firewall.
 
-![ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+![ANF Analysis results](../../images/ANF-troubleshooting-2.png)
 
 To fix this issue you can click on “Edit” and add another rule to allow return traffic i.e. from 0.0.0.0/0 to 10.2.0.0/24.
 
-![ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+![ANF Analysis results edit](../../images/ANF-troubleshooting-3.png)
 
-![ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+![ANF Fixed rule group](../../images/ANF-troubleshooting-4.png)
 
 After updating the rules, run the analyzer again to confirm the issue has been resolved.
 

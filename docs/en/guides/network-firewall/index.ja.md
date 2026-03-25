@@ -57,13 +57,13 @@ AWS Network Firewall を初めてデプロイする際、すべての機能を�
 
 Network Firewall をデプロイするには、1 つの VPC と 1 つのサブネットがあれば十分ですが、耐障害性のために、ワークロードが存在する各アベイラビリティーゾーンにファイアウォールエンドポイント/サブネットをデプロイすることを強くお勧めします。
 
-![ANF VPC and Subnet Configuration settings](../../images/ANF-configure.png)
+![ANF VPC and Subnet Configuration settings](../../images/jp/ANF-configure.png)
 
 *図 1: Network Firewall VPC 設定*
 
 独自のキーで Network Firewall の設定データを保管時に暗号化する場合は、KMS キーを指定する必要があります。
 
-![ANF CMK configuration](../../images/ANF-cmk.png)
+![ANF CMK configuration](../../images/jp/ANF-cmk.png)
 
 *図 2: Network Firewall CMK 設定*
 
@@ -99,7 +99,7 @@ Network Firewall は非対称ルーティングをサポートしていないた
 
 対応する「Alert established」アクションも必ず選択してください。これを選択しないと、デフォルトアクションによってドロップされたトラフィックがログに記録されません。「Alert established」はドロップアクションなしで単独で選択することもできます。これは、ルールを適用する前にどのトラフィックがドロップされるかを確認するのに便利です。
 
-![Network Firewall Drop Established default actions](../../images/nfw-drop-established.png)
+![Network Firewall Drop Established default actions](../../images/jp/nfw-drop-established.png)
 
 *図 3a: Network Firewall Drop Established デフォルトアクション*
 
@@ -107,7 +107,7 @@ Network Firewall は非対称ルーティングをサポートしていないた
 
 「Application drop established」は、TLS Client Hello メッセージが複数のパケットに分割される可能性がある環境向けに設計されており、これはポスト量子ハイブリッド暗号鍵交換でますます一般的になっています。TCP ハンドシェイク直後にトラフィックをドロップする代わりに、ドロップの判断を行う前に十分なアプリケーションレイヤーデータ（TLS SNI フィールドなど）を確認するまで待機します。
 
-![Network Firewall Application Drop Established default actions](../../images/nfw-app-drop-established.png)
+![Network Firewall Application Drop Established default actions](../../images/jp/nfw-app-drop-established.png)
 
 *図 3b: Network Firewall Application Drop Established デフォルトアクション*
 
@@ -122,7 +122,7 @@ Network Firewall は非対称ルーティングをサポートしていないた
 * Network Firewall のディープパケットインスペクション IPS 機能を活用するには、ステートフルルールを使用する必要があります。一部のお客様はステートレスルールから始めてしまい、後になってステートフルルールが必要だったことに気づくケースがあります。
   * ステートレスルールは、一部のトラフィックをログやアラートなしに単純に拒否したい場合に使用できますが、ほとんどの場合、ルールグループは AWS コンソールで以下のように表示されるべきです:
 
-![ANF Stateless Rule Groups](../../images/ANF-stateless-rule-evaluation.png)
+![ANF Stateless Rule Groups](../../images/jp/ANF-stateless-rule-evaluation.png)
 
 *図 4: Network Firewall ステートレスルールグループ*
 
@@ -137,9 +137,9 @@ Network Firewall は非対称ルーティングをサポートしていないた
 
 ### UI 生成ルールの代わりにカスタム Suricata ルールを使用
 
-これらはステートフルルールグループオプションで設定でき、完全な制御が可能な自由形式のテキストです。Suricata の柔軟性をより簡単に活用できます。開始時に役立つ [Suricata ルールの例](https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/suricata-examples.html)を参照してください。
+管理者が自ら標準ステートフルルールでプロトコル、送受信元、送受信ポートを設定追加するのではなく、カスタム Suricata ルールを使用することを推奨します。これらはステートフルルールグループオプションで設定でき、完全な制御が可能な自由形式のテキストです。Suricata の柔軟性をより簡単に活用できます。開始時に役立つ [Suricata ルールの例](https://docs.aws.amazon.com/ja_jp/network-firewall/latest/developerguide/suricata-examples.html)を参照してください。
 
-![ANF Stateful Rule Group](../../images/ANF-stateful-rule-group.png)
+![ANF Stateful Rule Group](../../images/jp/ANF-stateful-rule-group.png)
 
 *図 5: Network Firewall ステートフルルールグループ*
 
@@ -419,7 +419,7 @@ fields @timestamp, event.flow_id, event.netflow.bytes, event.tls.sni
 
 このクエリは 2 段階の集計を使用して SNI とバイト数を相関させます。まず flow_id ごとに集計して Flow ログのバイト数と Alert ログの SNI を結合し、次にドメインごとにすべてのバイト数を合計します。これにより、環境が最も多く通信している外部サービスと、トラフィックの大部分がどこに向かっているかを把握できます。
 
-![Custom query](../../images/custom-nfw-query.png)
+![Custom query](../../images/jp/custom-nfw-query.png)
 
 
 ## コストに関する考慮事項
@@ -452,21 +452,21 @@ DNS Firewall を使用して Network Firewall に到達するトラフィック�
 
 以下は、AWS マネジメントコンソールを使用してルールグループを分析する方法の例です。ステートレスルールグループに移動して「Analyze」をクリックします。
 
-![ANF Rule group analyzer](../../images/ANF-troubleshooting-1.png)
+![ANF Rule group analyzer](../../images/jp/ANF-troubleshooting-1.png)
 
 ルールグループアナライザーは、優先順位 2 のステートレスルールが Network Firewall を通じた非対称ルーティングにつながることを特定しました。
 
-![ANF Analysis results](../../images/ANF-troubleshotting-2.png)
+![ANF Analysis results](../../images/jp/ANF-troubleshooting-2.png)
 
 この問題を修正するには、「Edit」をクリックしてリターントラフィックを許可する別のルールを追加します。つまり、0.0.0.0/0 から 10.2.0.0/24 へのトラフィックです。
 
-![ANF Analysis results edit](../../images/ANF-troubleshotting-3.png)
+![ANF Analysis results edit](../../images/jp/ANF-troubleshooting-3.png)
 
-![ANF Fixed rule group](../../images/ANF-troubleshotting-4.png)
+![ANF Fixed rule group](../../images/jp/ANF-troubleshooting-4.png)
 
 ルールを更新した後、アナライザーを再度実行して問題が解決されたことを確認します。
 
-![ANF Anaylzer rerun](../../images/ANF-troubleshooting-5.png)
+![ANF Anaylzer rerun](../../images/jp/ANF-troubleshooting-5.png)
 
 ご質問がある場合は、AWS サポートチームにお問い合わせください。
 
