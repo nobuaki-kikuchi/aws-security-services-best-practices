@@ -1,4 +1,4 @@
-# DNS Firewall ベストプラクティスガイド
+# DNS Firewall ベストプラクティス
 
 ## 概要
 
