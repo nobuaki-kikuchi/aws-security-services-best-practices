@@ -72,3 +72,7 @@ plugins:
 
 markdown_extensions:
     - mdx_truly_sane_lists
+    - toc:
+        slugify: !!python/object/apply:pymdownx.slugs.slugify
+          kwds:
+            case: lower
